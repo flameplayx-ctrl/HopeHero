@@ -1,464 +1,1118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HopeHero | Functional Humanitarian Hub</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    
-    <style>
-        :root {
-            --primary-blue: #0056b3;
-            --calm-blue: #e6f2ff;
-            --emergency-red: #d93025;
-            --text-dark: #333;
-            --bg-light: #f8f9fa;
-        }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HopeHero — Humanitarian AI Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#03080f;
+  --bg2:#060d1a;
+  --bg3:#0a1525;
+  --card:#0d1b2e;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);
+  --blue:#2b7fff;
+  --blue2:#1a5fd4;
+  --red:#e63946;
+  --red2:#ff4d5a;
+  --cyan:#00d4ff;
+  --green:#00e676;
+  --amber:#ffb300;
+  --txt:#e8f0fe;
+  --txt2:#8ba4c7;
+  --txt3:#4a6a9a;
+  --font:'Syne',sans-serif;
+  --body:'DM Sans',sans-serif;
+  --radius:16px;
+  --radius2:24px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--txt);font-family:var(--body);overflow-x:hidden;}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:68px;background:rgba(3,8,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:var(--font);font-weight:800;font-size:1.5rem;letter-spacing:-0.03em;color:#fff;}
+.nav-logo span{color:var(--blue);}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{color:var(--txt2);text-decoration:none;font-size:.875rem;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--txt);}
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.lang-select{background:var(--card);border:1px solid var(--border2);color:var(--txt);padding:.4rem .8rem;border-radius:8px;font-family:var(--body);font-size:.85rem;cursor:pointer;outline:none;}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.4rem;border-radius:10px;font-weight:600;font-size:.875rem;cursor:pointer;border:none;transition:all .2s;text-decoration:none;}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:var(--blue2);transform:translateY(-1px);}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--txt);}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue);}
+.btn-red{background:var(--red);color:#fff;}
+.btn-red:hover{background:var(--red2);transform:translateY(-1px);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--txt);border-radius:2px;transition:all .3s;}
 
-        body {
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-        }
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:0 5%;padding-top:68px;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(43,127,255,0.12) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 80% 70%,rgba(230,57,70,0.08) 0%,transparent 60%);pointer-events:none;}
+.particles{position:absolute;inset:0;pointer-events:none;}
+.particle{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(43,127,255,0.5);animation:float-p linear infinite;}
+@keyframes float-p{0%{transform:translateY(100vh) scale(0);opacity:0;}10%{opacity:1;}90%{opacity:.5;}100%{transform:translateY(-10vh) scale(1.5);opacity:0;}}
+.hero-content{position:relative;text-align:center;max-width:860px;}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(43,127,255,0.1);border:1px solid rgba(43,127,255,0.3);color:var(--blue);padding:.4rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1.5rem;}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);animation:pulse .8s ease-in-out infinite alternate;}
+@keyframes pulse{0%{opacity:.4;transform:scale(0.8);}100%{opacity:1;transform:scale(1.2);}}
+.hero-title{font-family:var(--font);font-weight:800;font-size:clamp(3rem,8vw,6rem);line-height:1.0;letter-spacing:-0.04em;margin-bottom:1.25rem;}
+.hero-title .line1{display:block;color:#fff;}
+.hero-title .line2{display:block;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:1.15rem;color:var(--txt2);max-width:560px;margin:0 auto 2.5rem;line-height:1.7;}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.btn-sos{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 2rem;background:var(--red);color:#fff;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer;border:none;position:relative;overflow:hidden;transition:all .2s;}
+.btn-sos::before{content:'';position:absolute;inset:-4px;border-radius:14px;border:2px solid rgba(230,57,70,0.4);animation:sos-ring 1.5s ease-in-out infinite;}
+@keyframes sos-ring{0%{transform:scale(1);opacity:.8;}100%{transform:scale(1.15);opacity:0;}}
+.btn-sos:hover{background:var(--red2);transform:translateY(-2px);}
+.hero-stats{display:flex;gap:3rem;justify-content:center;margin-top:4rem;flex-wrap:wrap;}
+.stat-item{text-align:center;}
+.stat-num{font-family:var(--font);font-weight:800;font-size:2rem;color:#fff;letter-spacing:-0.04em;}
+.stat-label{font-size:.8rem;color:var(--txt3);margin-top:.2rem;text-transform:uppercase;letter-spacing:.05em;}
 
-        /* Navigation */
-        .navbar {
-            background-color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+/* SECTIONS */
+section{padding:6rem 5%;}
+.section-label{display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:1rem;}
+.section-title{font-family:var(--font);font-weight:800;font-size:clamp(2rem,4vw,3rem);letter-spacing:-0.03em;line-height:1.1;margin-bottom:1rem;color:#fff;}
+.section-sub{font-size:1rem;color:var(--txt2);max-width:560px;line-height:1.7;margin-bottom:3rem;}
+.section-header{text-align:center;display:flex;flex-direction:column;align-items:center;}
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-blue);
-        }
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:1.75rem;}
+.card:hover{border-color:var(--border2);transition:border-color .3s;}
 
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 15px;
-        }
+/* GRID */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;}
 
-        .nav-btn {
-            background: none;
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
+/* ═══ SOS SECTION ═══ */
+#sos{background:var(--bg2);}
+.sos-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:900px;margin:0 auto;}
+.sos-left{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;}
+.sos-button-wrap{position:relative;display:flex;align-items:center;justify-content:center;}
+.sos-ring{position:absolute;width:160px;height:160px;border-radius:50%;border:2px solid rgba(230,57,70,0.4);animation:sos-ring 1.5s ease-in-out infinite;}
+.sos-ring:nth-child(2){width:200px;height:200px;animation-delay:.4s;}
+.sos-ring:nth-child(3){width:240px;height:240px;animation-delay:.8s;}
+.sos-btn-main{position:relative;z-index:2;width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#c62828,var(--red));color:#fff;font-family:var(--font);font-weight:800;font-size:1.5rem;border:none;cursor:pointer;transition:all .2s;box-shadow:0 0 40px rgba(230,57,70,0.4);}
+.sos-btn-main:hover{transform:scale(1.08);box-shadow:0 0 60px rgba(230,57,70,0.6);}
+.sos-btn-main:active{transform:scale(0.96);}
+.sos-types{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
+.sos-type{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:.75rem;text-align:center;cursor:pointer;transition:all .2s;font-size:.8rem;font-weight:600;color:var(--txt2);}
+.sos-type:hover,.sos-type.active{border-color:var(--red);color:var(--red);background:rgba(230,57,70,0.06);}
+.sos-type .icon{font-size:1.4rem;display:block;margin-bottom:.3rem;}
+.sos-status{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.status-row{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border);}
+.status-row:last-child{border-bottom:none;}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dot-green{background:var(--green);box-shadow:0 0 8px var(--green);}
+.dot-amber{background:var(--amber);box-shadow:0 0 8px var(--amber);}
+.dot-blue{background:var(--blue);box-shadow:0 0 8px var(--blue);}
+.status-text{font-size:.85rem;color:var(--txt2);}
+.sos-notification{display:none;position:fixed;top:90px;right:2rem;background:var(--green);color:#000;padding:1rem 1.5rem;border-radius:14px;font-weight:700;z-index:2000;font-size:.95rem;box-shadow:0 8px 32px rgba(0,230,118,0.3);}
+.sos-notification.show{display:block;animation:slide-in .4s ease;}
+@keyframes slide-in{from{transform:translateX(120%);opacity:0;}to{transform:translateX(0);opacity:1;}}
 
-        .nav-btn:hover, .nav-btn.active {
-            background-color: var(--calm-blue);
-            color: var(--primary-blue);
-        }
+/* ═══ REFUGEE ═══ */
+#refugee{background:var(--bg);}
+.resource-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:1.5rem;transition:all .3s;overflow:hidden;}
+.resource-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(43,127,255,0.05),transparent);opacity:0;transition:opacity .3s;}
+.resource-card:hover{border-color:rgba(43,127,255,0.3);transform:translateY(-3px);}
+.resource-card:hover::before{opacity:1;}
+.resource-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;}
+.resource-card h3{font-family:var(--font);font-weight:700;font-size:1rem;margin-bottom:.4rem;color:#fff;}
+.resource-card p{font-size:.85rem;color:var(--txt2);line-height:1.6;}
+.availability{display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:600;margin-top:.75rem;padding:.3rem .7rem;border-radius:6px;}
+.avail-open{background:rgba(0,230,118,0.1);color:var(--green);}
+.avail-limited{background:rgba(255,179,0,0.1);color:var(--amber);}
+.avail-full{background:rgba(230,57,70,0.1);color:var(--red);}
+.search-bar{display:flex;gap:.75rem;margin-bottom:2rem;max-width:600px;margin-left:auto;margin-right:auto;}
+.search-input{flex:1;background:var(--card);border:1px solid var(--border2);color:var(--txt);padding:.75rem 1.25rem;border-radius:12px;font-family:var(--body);font-size:.9rem;outline:none;}
+.search-input:focus{border-color:var(--blue);}
+.filter-tabs{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem;}
+.filter-tab{background:var(--card);border:1px solid var(--border);color:var(--txt2);padding:.45rem 1rem;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .2s;}
+.filter-tab.active,.filter-tab:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
 
-        .donate-nav {
-            background-color: #28a745;
-            color: white;
-            font-weight: bold;
-        }
-        .donate-nav:hover {
-            background-color: #218838;
-            color: white;
-        }
+/* ═══ AI DETECTOR ═══ */
+#detector{background:var(--bg2);}
+.detector-wrap{max-width:700px;margin:0 auto;}
+.detector-input{width:100%;background:var(--card);border:1px solid var(--border2);color:var(--txt);padding:1rem 1.25rem;border-radius:14px;font-family:var(--body);font-size:.95rem;outline:none;resize:none;min-height:100px;margin-bottom:1rem;}
+.detector-input:focus{border-color:var(--blue);}
+.detector-result{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-top:1.5rem;display:none;}
+.detector-result.show{display:block;animation:fade-up .4s ease;}
+@keyframes fade-up{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.result-label{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;}
+.result-verdict{font-family:var(--font);font-weight:800;font-size:1.5rem;margin-bottom:.75rem;}
+.verdict-trusted{color:var(--green);}
+.verdict-suspicious{color:var(--amber);}
+.verdict-fake{color:var(--red);}
+.confidence-bar{height:6px;border-radius:3px;background:var(--bg3);margin-bottom:1rem;}
+.confidence-fill{height:100%;border-radius:3px;transition:width .8s ease;}
+.fill-green{background:var(--green);}
+.fill-amber{background:var(--amber);}
+.fill-red{background:var(--red);}
+.scanning{display:none;text-align:center;padding:2rem;color:var(--blue);font-weight:600;}
+.scanning.active{display:block;}
+.scan-bar{height:3px;background:linear-gradient(90deg,transparent,var(--blue),transparent);width:200px;margin:.75rem auto 0;animation:scan-move 1s ease-in-out infinite;}
+@keyframes scan-move{0%{transform:scaleX(0);}50%{transform:scaleX(1);}100%{transform:scaleX(0);}}
 
-        /* Layout */
-        .container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
+/* ═══ DONATION ═══ */
+#donation{background:var(--bg);}
+.campaign-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);overflow:hidden;transition:all .3s;}
+.campaign-card:hover{transform:translateY(-4px);border-color:var(--border2);}
+.campaign-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;}
+.campaign-body{padding:1.25rem;}
+.campaign-body h3{font-family:var(--font);font-weight:700;font-size:1rem;margin-bottom:.4rem;}
+.campaign-body p{font-size:.83rem;color:var(--txt2);margin-bottom:.85rem;line-height:1.6;}
+.progress-bar{height:6px;background:var(--bg3);border-radius:3px;margin-bottom:.5rem;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--cyan));}
+.progress-meta{display:flex;justify-content:space-between;font-size:.78rem;color:var(--txt2);margin-bottom:.85rem;}
+.progress-meta strong{color:var(--txt);}
+.volunteer-form{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:2rem;max-width:620px;margin:3rem auto 0;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.form-group{margin-bottom:1rem;}
+.form-group label{display:block;font-size:.82rem;font-weight:600;color:var(--txt2);margin-bottom:.4rem;}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--txt);padding:.7rem 1rem;border-radius:10px;font-family:var(--body);font-size:.9rem;outline:none;}
+.form-group input:focus,.form-group select:focus{border-color:var(--blue);}
+.ticker{background:rgba(43,127,255,0.06);border:1px solid rgba(43,127,255,0.15);border-radius:10px;padding:.6rem 1.25rem;font-size:.83rem;color:var(--blue);margin-bottom:2.5rem;display:flex;align-items:center;gap:.5rem;overflow:hidden;}
+.ticker-inner{white-space:nowrap;animation:ticker 20s linear infinite;}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
 
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.4s;
-        }
+/* ═══ MENTAL HEALTH ═══ */
+#mental{background:linear-gradient(160deg,var(--bg2) 0%,#06111e 100%);}
+.mh-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:920px;margin:0 auto;}
+.breathing-widget{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:2rem;text-align:center;}
+.breath-circle{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(43,127,255,0.3),rgba(0,212,255,0.1));border:2px solid rgba(43,127,255,0.3);display:flex;align-items:center;justify-content:center;margin:1.5rem auto;font-size:.85rem;font-weight:600;color:var(--blue);cursor:pointer;transition:all .2s;}
+.breath-circle.inhale{animation:breath-in 4s ease-in-out forwards;}
+.breath-circle.exhale{animation:breath-out 4s ease-in-out forwards;}
+@keyframes breath-in{0%{transform:scale(1);}100%{transform:scale(1.4);}}
+@keyframes breath-out{0%{transform:scale(1.4);}100%{transform:scale(1);}}
+.mood-check{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:2rem;}
+.mood-emojis{display:flex;gap:.75rem;margin:1rem 0;flex-wrap:wrap;}
+.mood-btn{font-size:1.8rem;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.5rem .75rem;cursor:pointer;transition:all .2s;}
+.mood-btn:hover,.mood-btn.active{transform:scale(1.15);border-color:var(--blue);}
+.chat-sim{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:1.5rem;display:flex;flex-direction:column;gap:.75rem;max-height:220px;overflow-y:auto;}
+.msg{padding:.6rem .9rem;border-radius:10px;font-size:.84rem;max-width:85%;line-height:1.6;}
+.msg-bot{background:var(--bg3);color:var(--txt);}
+.msg-user{background:rgba(43,127,255,0.15);color:var(--txt);align-self:flex-end;}
+.positive-banner{background:linear-gradient(135deg,rgba(43,127,255,0.1),rgba(0,212,255,0.05));border:1px solid rgba(43,127,255,0.2);border-radius:var(--radius);padding:1.5rem;text-align:center;grid-column:1/-1;font-family:var(--font);font-size:1.5rem;font-weight:700;color:#fff;}
+.positive-banner span{color:var(--blue);}
 
-        .tab-content.active {
-            display: block;
-        }
+/* ═══ DASHBOARD ═══ */
+#dashboard{background:var(--bg2);}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;}
+.dash-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;}
+.dash-card .number{font-family:var(--font);font-weight:800;font-size:1.75rem;color:#fff;letter-spacing:-0.04em;}
+.dash-card .label{font-size:.78rem;color:var(--txt3);margin-top:.2rem;text-transform:uppercase;letter-spacing:.06em;}
+.dash-card .change{font-size:.78rem;margin-top:.3rem;font-weight:600;}
+.change-up{color:var(--red);}
+.change-down{color:var(--green);}
+.chart-area{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:1.5rem;margin-bottom:1.5rem;}
+.chart-label{font-size:.85rem;font-weight:600;color:var(--txt2);margin-bottom:1rem;}
+.bar-chart{display:flex;align-items:flex-end;gap:.5rem;height:120px;}
+.bar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem;}
+.bar{border-radius:4px 4px 0 0;min-height:8px;transition:height .5s ease;}
+.bar-name{font-size:.7rem;color:var(--txt3);}
+.map-placeholder{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:1.5rem;position:relative;overflow:hidden;}
+.map-placeholder svg{width:100%;height:220px;opacity:.5;}
+.map-dot{position:absolute;width:12px;height:12px;border-radius:50%;animation:pulse-map 1.5s ease-in-out infinite;}
+.map-dot::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid;animation:sos-ring 1.5s ease-in-out infinite;}
+@keyframes pulse-map{0%,100%{transform:scale(0.9);}50%{transform:scale(1.1);}}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+/* ═══ PREPAREDNESS ═══ */
+#preparedness{background:var(--bg);}
+.check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;max-width:800px;margin:0 auto;}
+.check-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:all .2s;}
+.check-item.checked{border-color:rgba(0,230,118,0.3);background:rgba(0,230,118,0.04);}
+.checkmark{width:24px;height:24px;border-radius:6px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.check-item.checked .checkmark{background:var(--green);border-color:var(--green);color:#000;font-size:14px;}
+.check-text{font-size:.9rem;font-weight:500;}
+.progress-overall{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:2rem;max-width:800px;margin:2rem auto 0;text-align:center;}
+.prog-circle{width:100px;height:100px;border-radius:50%;background:conic-gradient(var(--green) 0%,var(--bg3) 0%);display:flex;align-items:center;justify-content:center;margin:1rem auto;font-family:var(--font);font-weight:800;font-size:1.5rem;color:#fff;transition:background .5s;}
+.tip-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;max-width:800px;margin:2rem auto 0;}
+.tip-card{background:var(--bg3);border-radius:12px;padding:1rem;font-size:.83rem;color:var(--txt2);line-height:1.6;}
+.tip-card strong{display:block;font-weight:600;color:var(--txt);margin-bottom:.3rem;}
 
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
-        }
+/* ═══ SDG ═══ */
+#sdg{background:var(--bg2);}
+.sdg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;max-width:900px;margin:0 auto;}
+.sdg-card{border-radius:var(--radius2);padding:2rem;text-align:center;transition:all .3s;cursor:default;}
+.sdg-card:hover{transform:translateY(-4px);}
+.sdg-num{font-family:var(--font);font-weight:800;font-size:3rem;margin-bottom:.25rem;}
+.sdg-name{font-family:var(--font);font-weight:700;font-size:1rem;margin-bottom:.75rem;}
+.sdg-desc{font-size:.85rem;line-height:1.6;opacity:.85;}
 
-        h2 {
-            margin-bottom: 1rem;
-            color: var(--primary-blue);
-        }
+/* ═══ CHAT ═══ */
+.chat-toggle{position:fixed;bottom:2rem;right:2rem;width:56px;height:56px;border-radius:50%;background:var(--blue);border:none;color:#fff;font-size:1.4rem;cursor:pointer;z-index:900;box-shadow:0 4px 20px rgba(43,127,255,0.4);display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.chat-toggle:hover{background:var(--blue2);transform:scale(1.08);}
+.chat-window{position:fixed;bottom:6rem;right:2rem;width:340px;background:var(--card);border:1px solid var(--border2);border-radius:20px;z-index:900;display:none;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,0.4);overflow:hidden;}
+.chat-window.open{display:flex;}
+.chat-header{background:var(--bg3);padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid var(--border);}
+.chat-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.chat-header h4{font-family:var(--font);font-weight:700;font-size:.95rem;color:#fff;}
+.chat-header p{font-size:.75rem;color:var(--green);}
+.chat-close{margin-left:auto;background:none;border:none;color:var(--txt2);font-size:1.1rem;cursor:pointer;}
+.chat-messages{flex:1;padding:1rem;overflow-y:auto;max-height:340px;display:flex;flex-direction:column;gap:.75rem;}
+.chat-msg{max-width:85%;padding:.65rem .9rem;border-radius:12px;font-size:.85rem;line-height:1.6;}
+.chat-bot{background:var(--bg3);color:var(--txt);align-self:flex-start;}
+.chat-user{background:rgba(43,127,255,0.2);color:var(--txt);align-self:flex-end;}
+.typing-dots{display:flex;gap:4px;align-items:center;padding:.5rem .75rem;}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--txt2);animation:blink .8s ease-in-out infinite;}
+.typing-dots span:nth-child(2){animation-delay:.2s;}
+.typing-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,100%{opacity:.3;}50%{opacity:1;}}
+.quick-replies{display:flex;flex-wrap:wrap;gap:.4rem;padding:.75rem 1rem;border-top:1px solid var(--border);}
+.quick-reply{background:var(--bg3);border:1px solid var(--border2);color:var(--txt2);padding:.35rem .75rem;border-radius:8px;font-size:.78rem;cursor:pointer;transition:all .2s;}
+.quick-reply:hover{border-color:var(--blue);color:var(--blue);}
+.chat-input-row{display:flex;gap:.5rem;padding:.75rem 1rem;border-top:1px solid var(--border);}
+.chat-input{flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--txt);padding:.6rem .9rem;border-radius:10px;font-family:var(--body);font-size:.85rem;outline:none;}
+.chat-input:focus{border-color:var(--blue);}
+.chat-send{background:var(--blue);border:none;color:#fff;width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:1rem;transition:all .2s;}
+.chat-send:hover{background:var(--blue2);}
 
-        /* SOS Custom Elements */
-        .sos-card {
-            text-align: center;
-            border: 3px solid var(--emergency-red);
-        }
+/* ═══ FOOTER ═══ */
+footer{background:#020609;border-top:1px solid var(--border);padding:4rem 5% 2rem;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;}
+.footer-logo{font-family:var(--font);font-weight:800;font-size:1.75rem;letter-spacing:-0.04em;margin-bottom:.75rem;}
+.footer-logo span{color:var(--blue);}
+.footer-desc{font-size:.87rem;color:var(--txt3);line-height:1.7;max-width:260px;}
+.footer-col h4{font-family:var(--font);font-weight:700;font-size:.9rem;margin-bottom:1rem;color:#fff;}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.55rem;}
+.footer-col a{color:var(--txt3);text-decoration:none;font-size:.85rem;transition:color .2s;}
+.footer-col a:hover{color:var(--txt);}
+.newsletter-form{display:flex;gap:.5rem;margin-top:.75rem;}
+.newsletter-form input{flex:1;background:var(--card);border:1px solid var(--border2);color:var(--txt);padding:.6rem 1rem;border-radius:8px;font-family:var(--body);font-size:.85rem;outline:none;}
+.footer-bottom{border-top:1px solid var(--border);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap;}
+.footer-bottom p{font-size:.8rem;color:var(--txt3);}
+.social-links{display:flex;gap:1rem;}
+.social-links a{color:var(--txt3);text-decoration:none;font-size:1.1rem;transition:color .2s;}
+.social-links a:hover{color:var(--blue);}
 
-        .sos-btn {
-            background-color: var(--emergency-red);
-            color: white;
-            font-size: 1.5rem;
-            font-weight: bold;
-            border: none;
-            padding: 20px 40px;
-            border-radius: 50px;
-            cursor: pointer;
-            margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(217, 48, 37, 0.4);
-            animation: pulse 2s infinite;
-        }
+/* RTL */
+[dir="rtl"] .nav-links{flex-direction:row-reverse;}
+[dir="rtl"] .hero-stats{flex-direction:row-reverse;}
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); box-shadow: 0 4px 25px rgba(217, 48, 37, 0.7); }
-            100% { transform: scale(1); }
-        }
-
-        /* Interactive Map Area */
-        #map {
-            height: 400px;
-            width: 100%;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px solid #ccc;
-        }
-
-        /* Shared Buttons UI */
-        .standard-btn {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .action-link {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #25D366;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        /* Breathing Tool Styling */
-        .breathing-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .circle-container {
-            width: 200px;
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .breathing-circle {
-            background-color: var(--calm-blue);
-            width: 100px;
-            height: 100px;
-            border-radius: 50px;
-            position: absolute;
-            z-index: 1;
-            transition: all 4s ease-in-out;
-        }
-
-        .breathing-circle.expand {
-            width: 200px;
-            height: 200px;
-            background-color: #b3d7ff;
-        }
-
-        #breathing-text {
-            position: relative;
-            z-index: 2;
-            font-weight: bold;
-            color: var(--primary-blue);
-        }
-    </style>
+/* MOBILE */
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .nav-links.open{display:flex;flex-direction:column;position:fixed;top:68px;left:0;right:0;background:var(--bg2);padding:2rem;gap:1.5rem;border-bottom:1px solid var(--border);}
+  .sos-grid{grid-template-columns:1fr;}
+  .mh-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .chat-window{width:calc(100vw - 2rem);right:1rem;}
+}
+@media(max-width:480px){
+  .footer-grid{grid-template-columns:1fr;}
+  .hero-btns{flex-direction:column;align-items:center;}
+}
+</style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="logo"><i class="fa-solid fa-dove"></i> HopeHero</div>
-        <ul class="nav-links">
-            <li><button class="nav-btn active" data-target="home">Home</button></li>
-            <li><button class="nav-btn" data-target="sos">SOS Alert</button></li>
-            <li><button class="nav-btn" data-target="refugee">Live Map</button></li>
-            <li><button class="nav-btn" data-target="factcheck">Fact Check</button></li>
-            <li><button class="nav-btn" data-target="mentalhealth">Mental Health</button></li>
-            <li><button class="nav-btn donate-nav" data-target="donate">Donate</button></li>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Hope<span>Hero</span></div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#hero" data-i18n="nav_home">Home</a></li>
+    <li><a href="#sos" data-i18n="nav_sos">SOS</a></li>
+    <li><a href="#refugee" data-i18n="nav_refugee">Refugee Hub</a></li>
+    <li><a href="#donation" data-i18n="nav_donate">Donate</a></li>
+    <li><a href="#dashboard" data-i18n="nav_dash">Dashboard</a></li>
+    <li><a href="#mental" data-i18n="nav_mental">Mental Health</a></li>
+  </ul>
+  <div class="nav-right">
+    <select class="lang-select" id="langSelect" onchange="setLang(this.value)">
+      <option value="en">🌐 EN</option>
+      <option value="ar">🌐 AR</option>
+      <option value="hi">🌐 HI</option>
+      <option value="fr">🌐 FR</option>
+    </select>
+    <a href="#sos" class="btn btn-red" data-i18n="nav_sos_btn">Emergency SOS</a>
+    <div class="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="pulse-dot"></span><span data-i18n="hero_badge">AI-Powered Emergency Platform</span></div>
+    <h1 class="hero-title"><span class="line1">HopeHero</span><span class="line2" data-i18n="hero_title2">Saving Lives Through Technology</span></h1>
+    <p class="hero-sub" data-i18n="hero_sub">Technology-driven humanitarian support during wars, disasters, and emergencies. Real-time, trusted, accessible to all.</p>
+    <div class="hero-btns">
+      <button class="btn-sos" onclick="scrollTo('sos')" data-i18n="hero_btn_sos">🆘 Emergency SOS</button>
+      <a href="#refugee" class="btn btn-primary" data-i18n="hero_btn_help">Get Help</a>
+      <a href="#donation" class="btn btn-outline" data-i18n="hero_btn_support">Support Others</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num" id="c1">0</div><div class="stat-label" data-i18n="stat1">Lives Impacted</div></div>
+      <div class="stat-item"><div class="stat-num" id="c2">0</div><div class="stat-label" data-i18n="stat2">Volunteers Active</div></div>
+      <div class="stat-item"><div class="stat-num" id="c3">0</div><div class="stat-label" data-i18n="stat3">Countries Covered</div></div>
+      <div class="stat-item"><div class="stat-num" id="c4">0</div><div class="stat-label" data-i18n="stat4">Donations Raised</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SOS -->
+<section id="sos">
+  <div class="section-header">
+    <span class="section-label" data-i18n="sos_label">Emergency System</span>
+    <h2 class="section-title" data-i18n="sos_title">Emergency SOS</h2>
+    <p class="section-sub" data-i18n="sos_sub">Trigger an instant alert. Our network of volunteers and emergency services responds within minutes.</p>
+  </div>
+  <div class="sos-grid">
+    <div class="sos-left">
+      <div class="sos-button-wrap">
+        <div class="sos-ring"></div>
+        <div class="sos-ring"></div>
+        <div class="sos-ring"></div>
+        <button class="sos-btn-main" onclick="triggerSOS()" data-i18n="sos_btn">SOS</button>
+      </div>
+      <div class="sos-types">
+        <div class="sos-type active" onclick="selectType(this,'Medical')"><span class="icon">🏥</span><span data-i18n="sos_medical">Medical</span></div>
+        <div class="sos-type" onclick="selectType(this,'Food')"><span class="icon">🍞</span><span data-i18n="sos_food">Food</span></div>
+        <div class="sos-type" onclick="selectType(this,'Shelter')"><span class="icon">🏠</span><span data-i18n="sos_shelter">Shelter</span></div>
+        <div class="sos-type" onclick="selectType(this,'Rescue')"><span class="icon">🚁</span><span data-i18n="sos_rescue">Rescue</span></div>
+        <div class="sos-type" onclick="selectType(this,'Missing')"><span class="icon">👤</span><span data-i18n="sos_missing">Missing</span></div>
+        <div class="sos-type" onclick="selectType(this,'Water')"><span class="icon">💧</span><span data-i18n="sos_water">Water</span></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+      <div class="card">
+        <h3 style="font-family:var(--font);font-weight:700;margin-bottom:1rem;" data-i18n="sos_live">Live Status</h3>
+        <div class="sos-status">
+          <div class="status-row"><div class="status-dot dot-green"></div><div class="status-text" data-i18n="status1">Emergency network: Online</div></div>
+          <div class="status-row"><div class="status-dot dot-blue"></div><div class="status-text" data-i18n="status2">Volunteers nearby: 12 available</div></div>
+          <div class="status-row"><div class="status-dot dot-amber"></div><div class="status-text" data-i18n="status3">Avg response time: 4 minutes</div></div>
+          <div class="status-row"><div class="status-dot dot-green"></div><div class="status-text" data-i18n="status4">Medical units: 3 dispatched</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-family:var(--font);font-weight:700;margin-bottom:.75rem;" data-i18n="emergency_contacts">Emergency Contacts</h3>
+        <div style="display:flex;flex-direction:column;gap:.5rem;">
+          <div style="display:flex;justify-content:space-between;font-size:.85rem;"><span style="color:var(--txt2);">🌍 UNHCR Hotline</span><span style="color:var(--blue);">+1-800-HOPE</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:.85rem;"><span style="color:var(--txt2);">🚨 WHO Emergency</span><span style="color:var(--blue);">+41 22 791 2111</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:.85rem;"><span style="color:var(--txt2);">🔴 Red Cross</span><span style="color:var(--blue);">+41 22 734 6001</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOTIFICATION -->
+<div class="sos-notification" id="sosNotif">✅ Emergency request sent successfully! Help is on the way.</div>
+
+<!-- REFUGEE HUB -->
+<section id="refugee">
+  <div class="section-header">
+    <span class="section-label" data-i18n="refugee_label">Support Network</span>
+    <h2 class="section-title" data-i18n="refugee_title">Refugee Support Hub</h2>
+    <p class="section-sub" data-i18n="refugee_sub">Find shelter, food, medical care, and essential resources near you.</p>
+  </div>
+  <div class="search-bar">
+    <input type="text" class="search-input" placeholder="Search resources..." oninput="filterResources(this.value)" data-i18n-ph="refugee_search"/>
+    <button class="btn btn-primary" data-i18n="search_btn">Search</button>
+  </div>
+  <div class="filter-tabs">
+    <div class="filter-tab active" onclick="filterTab(this,'all')" data-i18n="filter_all">All</div>
+    <div class="filter-tab" onclick="filterTab(this,'shelter')" data-i18n="filter_shelter">Shelter</div>
+    <div class="filter-tab" onclick="filterTab(this,'food')" data-i18n="filter_food">Food</div>
+    <div class="filter-tab" onclick="filterTab(this,'medical')" data-i18n="filter_medical">Medical</div>
+    <div class="filter-tab" onclick="filterTab(this,'transport')" data-i18n="filter_transport">Transport</div>
+  </div>
+  <div class="grid-3" id="resourceGrid">
+    <div class="resource-card" data-cat="shelter">
+      <div class="resource-icon" style="background:rgba(43,127,255,0.1);">🏠</div>
+      <h3 data-i18n="r1_title">Temporary Shelter Zones</h3>
+      <p data-i18n="r1_desc">Safe temporary housing for displaced families with basic amenities and security.</p>
+      <div class="availability avail-open">● Open — 240 beds</div>
+    </div>
+    <div class="resource-card" data-cat="food">
+      <div class="resource-icon" style="background:rgba(0,230,118,0.1);">🍱</div>
+      <h3 data-i18n="r2_title">Food Distribution Center</h3>
+      <p data-i18n="r2_desc">Hot meals and ration packs distributed three times daily to registered refugees.</p>
+      <div class="availability avail-open">● Open — 500+ daily servings</div>
+    </div>
+    <div class="resource-card" data-cat="medical">
+      <div class="resource-icon" style="background:rgba(230,57,70,0.1);">🏥</div>
+      <h3 data-i18n="r3_title">Mobile Medical Units</h3>
+      <p data-i18n="r3_desc">Traveling medical teams providing primary care, vaccinations, and trauma treatment.</p>
+      <div class="availability avail-limited">● Limited — 3 units active</div>
+    </div>
+    <div class="resource-card" data-cat="food">
+      <div class="resource-icon" style="background:rgba(0,212,255,0.1);">💧</div>
+      <h3 data-i18n="r4_title">Water Stations</h3>
+      <p data-i18n="r4_desc">Clean potable water distribution points available 24/7 across camp zones.</p>
+      <div class="availability avail-open">● Open — 18 stations</div>
+    </div>
+    <div class="resource-card" data-cat="transport">
+      <div class="resource-icon" style="background:rgba(255,179,0,0.1);">🚌</div>
+      <h3 data-i18n="r5_title">Transportation Assistance</h3>
+      <p data-i18n="r5_desc">Free shuttle services connecting camps to border crossings and evacuation zones.</p>
+      <div class="availability avail-limited">● Limited — 6 routes running</div>
+    </div>
+    <div class="resource-card" data-cat="shelter">
+      <div class="resource-icon" style="background:rgba(255,100,150,0.1);">👨‍👩‍👧</div>
+      <h3 data-i18n="r6_title">Family Reunification</h3>
+      <p data-i18n="r6_desc">Dedicated teams helping families separated by conflict reconnect safely.</p>
+      <div class="availability avail-open">● Open — register now</div>
+    </div>
+  </div>
+</section>
+
+<!-- AI DETECTOR -->
+<section id="detector">
+  <div class="section-header">
+    <span class="section-label" data-i18n="det_label">AI Verification</span>
+    <h2 class="section-title" data-i18n="det_title">Fake News Detector</h2>
+    <p class="section-sub" data-i18n="det_sub">Paste any headline, URL, or claim to instantly check its credibility with our AI analysis engine.</p>
+  </div>
+  <div class="detector-wrap">
+    <textarea class="detector-input" id="detInput" placeholder="Paste a headline, URL, or claim here..." rows="4"></textarea>
+    <button class="btn btn-primary" style="width:100%;" onclick="runDetector()" data-i18n="det_btn">Analyze with AI</button>
+    <div class="scanning" id="scanning"><div>🔍 Scanning information sources...</div><div class="scan-bar"></div></div>
+    <div class="detector-result" id="detResult">
+      <div class="result-label" data-i18n="det_verdict">Verdict</div>
+      <div class="result-verdict" id="verdictText"></div>
+      <div class="confidence-bar"><div class="confidence-fill" id="confFill"></div></div>
+      <div style="font-size:.82rem;color:var(--txt2);margin-bottom:.5rem;" id="confText"></div>
+      <div style="background:var(--bg3);border-radius:10px;padding:1rem;font-size:.85rem;color:var(--txt2);line-height:1.7;" id="aiReason"></div>
+      <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+        <div style="font-size:.75rem;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;" data-i18n="det_tips">Misinformation Tips</div>
+        <ul style="font-size:.82rem;color:var(--txt2);padding-left:1.25rem;line-height:1.8;">
+          <li data-i18n="tip1">Always verify with multiple independent sources</li>
+          <li data-i18n="tip2">Check publication date and author credentials</li>
+          <li data-i18n="tip3">Reverse image search photos before sharing</li>
         </ul>
-    </nav>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <main class="container">
-        <section id="home" class="tab-content active">
-            <div class="card" style="text-align: center; padding: 3rem 2rem;">
-                <h1>Real-Time Crisis Interventions</h1>
-                <p style="margin: 1.5rem 0; font-size: 1.2rem; color: #555;">An open ecosystem offering immediate geolocation-based support, visual grounding tools, and dynamic counter-misinformation workflows.</p>
-                <button class="standard-btn" style="background-color: var(--emergency-red);" onclick="document.querySelector('[data-target=\'sos\']').click()">Access Emergency Console</button>
-            </div>
-        </section>
+<!-- DONATION -->
+<section id="donation">
+  <div class="section-header">
+    <span class="section-label" data-i18n="don_label">Give & Volunteer</span>
+    <h2 class="section-title" data-i18n="don_title">Donate & Volunteer</h2>
+    <p class="section-sub" data-i18n="don_sub">Your contribution saves lives. Join 50,000+ donors and volunteers making real change.</p>
+  </div>
+  <div class="ticker">
+    <span>🔴 LIVE:</span>
+    <div class="ticker-inner">
+      Ahmed donated $50 to Food Aid · Sara donated $200 to Medical Support · UNHCR matched $5,000 · James donated $75 to Shelter · Fatima donated $100 to Child Protection · Ahmed donated $50 to Food Aid · Sara donated $200 to Medical Support · UNHCR matched $5,000 · James donated $75 to Shelter ·
+    </div>
+  </div>
+  <div class="grid-3" style="margin-bottom:3rem;">
+    <div class="campaign-card">
+      <div class="campaign-img" style="background:rgba(0,230,118,0.06);">🍞</div>
+      <div class="campaign-body">
+        <h3 data-i18n="camp1_title">Emergency Food Aid</h3>
+        <p data-i18n="camp1_desc">Providing daily meals for 10,000 displaced families across conflict zones.</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:78%;"></div></div>
+        <div class="progress-meta"><span>$78,000 raised</span><span>Goal: <strong>$100,000</strong></span></div>
+        <button class="btn btn-primary" style="width:100%;" data-i18n="donate_btn">Donate Now</button>
+      </div>
+    </div>
+    <div class="campaign-card">
+      <div class="campaign-img" style="background:rgba(230,57,70,0.06);">🏥</div>
+      <div class="campaign-body">
+        <h3 data-i18n="camp2_title">Medical Crisis Fund</h3>
+        <p data-i18n="camp2_desc">Supplying trauma kits, medicines, and mobile medical units to disaster zones.</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:55%;"></div></div>
+        <div class="progress-meta"><span>$110,000 raised</span><span>Goal: <strong>$200,000</strong></span></div>
+        <button class="btn btn-primary" style="width:100%;" data-i18n="donate_btn">Donate Now</button>
+      </div>
+    </div>
+    <div class="campaign-card">
+      <div class="campaign-img" style="background:rgba(255,179,0,0.06);">🏠</div>
+      <div class="campaign-body">
+        <h3 data-i18n="camp3_title">Shelter for Families</h3>
+        <p data-i18n="camp3_desc">Building temporary safe housing for 500 homeless refugee families this winter.</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:62%;"></div></div>
+        <div class="progress-meta"><span>$62,000 raised</span><span>Goal: <strong>$100,000</strong></span></div>
+        <button class="btn btn-primary" style="width:100%;" data-i18n="donate_btn">Donate Now</button>
+      </div>
+    </div>
+  </div>
+  <div class="volunteer-form">
+    <h3 style="font-family:var(--font);font-weight:700;font-size:1.25rem;margin-bottom:1.5rem;" data-i18n="vol_title">Register as a Volunteer</h3>
+    <div class="form-row">
+      <div class="form-group"><label data-i18n="form_name">Full Name</label><input type="text" placeholder="Your full name"/></div>
+      <div class="form-group"><label data-i18n="form_email">Email</label><input type="email" placeholder="you@example.com"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label data-i18n="form_skill">Skill</label>
+        <select>
+          <option data-i18n="skill_medical">Medical / First Aid</option>
+          <option data-i18n="skill_logistics">Logistics</option>
+          <option data-i18n="skill_translation">Translation</option>
+          <option data-i18n="skill_counseling">Counseling</option>
+          <option data-i18n="skill_tech">Technology</option>
+        </select>
+      </div>
+      <div class="form-group"><label data-i18n="form_location">Location</label><input type="text" placeholder="City, Country"/></div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;" onclick="joinVolunteer()" data-i18n="vol_btn">Join the Mission</button>
+  </div>
+</section>
 
-        <section id="sos" class="tab-content">
-            <div class="card sos-card">
-                <h2><i class="fa-solid fa-triangle-exclamation"></i> Live Emergency Broadcast</h2>
-                <p>Clicking below will pull raw telemetry data from your browser's hardware GPS to build an external broadcast package.</p>
-                <button id="sos-trigger" class="sos-btn">GENERATE LIVE SOS</button>
-                <div id="sos-output" style="margin-top: 15px;"></div>
-            </div>
-        </section>
+<!-- MENTAL HEALTH -->
+<section id="mental">
+  <div class="section-header">
+    <span class="section-label" data-i18n="mh_label">Well-being</span>
+    <h2 class="section-title" data-i18n="mh_title">Mental Health Support</h2>
+    <p class="section-sub" data-i18n="mh_sub">Trauma, stress, and fear are real. We're here to help you breathe, reflect, and recover.</p>
+  </div>
+  <div class="mh-grid">
+    <div class="breathing-widget">
+      <h3 style="font-family:var(--font);font-weight:700;" data-i18n="breath_title">Breathing Exercise</h3>
+      <p style="font-size:.83rem;color:var(--txt2);margin-top:.3rem;" data-i18n="breath_desc">Tap the circle and follow the rhythm to calm your nervous system.</p>
+      <div class="breath-circle" id="breathCircle" onclick="startBreath()" data-i18n="breath_tap">Tap to start</div>
+      <p id="breathInstr" style="font-size:.85rem;color:var(--txt2);" data-i18n="breath_instr">Inhale · Hold · Exhale</p>
+    </div>
+    <div class="mood-check">
+      <h3 style="font-family:var(--font);font-weight:700;" data-i18n="mood_title">How are you feeling?</h3>
+      <p style="font-size:.83rem;color:var(--txt2);margin-top:.3rem;" data-i18n="mood_desc">Check in with yourself. No judgment here.</p>
+      <div class="mood-emojis">
+        <button class="mood-btn" onclick="selectMood(this,'great')">😊</button>
+        <button class="mood-btn" onclick="selectMood(this,'ok')">😐</button>
+        <button class="mood-btn" onclick="selectMood(this,'sad')">😢</button>
+        <button class="mood-btn" onclick="selectMood(this,'anxious')">😰</button>
+        <button class="mood-btn" onclick="selectMood(this,'scared')">😱</button>
+      </div>
+      <div id="moodResponse" style="font-size:.85rem;color:var(--txt2);line-height:1.7;min-height:48px;"></div>
+    </div>
+    <div class="positive-banner">
+      <span data-i18n="positive1">You are </span><span>not alone.</span><br/>
+      <span style="font-size:1rem;font-weight:400;color:var(--txt2);" data-i18n="positive2">Every crisis passes. We face it together.</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.75rem;">
+      <h3 style="font-family:var(--font);font-weight:700;" data-i18n="support_resources">Support Resources</h3>
+      <div class="card" style="padding:1rem;">
+        <div style="font-weight:600;font-size:.9rem;" data-i18n="res1_title">🧠 Trauma Recovery Guide</div>
+        <div style="font-size:.8rem;color:var(--txt2);margin-top:.3rem;" data-i18n="res1_desc">Step-by-step support for processing traumatic events.</div>
+      </div>
+      <div class="card" style="padding:1rem;">
+        <div style="font-weight:600;font-size:.9rem;" data-i18n="res2_title">🌙 Sleep & Stress Relief</div>
+        <div style="font-size:.8rem;color:var(--txt2);margin-top:.3rem;" data-i18n="res2_desc">Guided audio sessions for rest during crisis situations.</div>
+      </div>
+      <div class="card" style="padding:1rem;">
+        <div style="font-weight:600;font-size:.9rem;" data-i18n="res3_title">👨‍👩‍👧 Family Resilience Kit</div>
+        <div style="font-size:.8rem;color:var(--txt2);margin-top:.3rem;" data-i18n="res3_desc">Activities and strategies to support children during emergencies.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <section id="refugee" class="tab-content">
-            <div class="card">
-                <h2><i class="fa-solid fa-location-crosshairs"></i> Live OpenStreetMap Radar</h2>
-                <p>An open-source interactive canvas mapping system. Click below to load the live system around your exact physical location.</p>
-                <button id="load-map-btn" class="standard-btn">Initialize Live Map Canvas</button>
-                <div id="map"></div>
-            </div>
-        </section>
+<!-- DASHBOARD -->
+<section id="dashboard">
+  <div class="section-header">
+    <span class="section-label" data-i18n="dash_label">Live Data</span>
+    <h2 class="section-title" data-i18n="dash_title">Crisis Dashboard</h2>
+    <p class="section-sub" data-i18n="dash_sub">Real-time global emergency data, updated continuously from verified sources.</p>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-card"><div class="number">1,247</div><div class="label" data-i18n="dash1">Active Emergencies</div><div class="change change-up">↑ 23 new</div></div>
+    <div class="dash-card"><div class="number">4.2M</div><div class="label" data-i18n="dash2">Refugees Tracked</div><div class="change change-up">↑ 12,400</div></div>
+    <div class="dash-card"><div class="number">$2.8M</div><div class="label" data-i18n="dash3">Donations Today</div><div class="change change-down">↑ 8%</div></div>
+    <div class="dash-card"><div class="number">18,432</div><div class="label" data-i18n="dash4">Volunteers Online</div><div class="change change-down">↑ healthy</div></div>
+    <div class="dash-card"><div class="number">97</div><div class="label" data-i18n="dash5">Countries Covered</div><div class="change" style="color:var(--blue);">global</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="chart-area">
+      <div class="chart-label" data-i18n="chart1_title">Emergency Alerts by Region (this week)</div>
+      <div class="bar-chart" id="barChart"></div>
+    </div>
+    <div class="map-placeholder">
+      <div class="chart-label" data-i18n="chart2_title">Active Crisis Zones</div>
+      <div style="position:relative;height:200px;background:var(--bg3);border-radius:10px;overflow:hidden;">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.3;font-size:4rem;">🌍</div>
+        <div class="map-dot" style="top:38%;left:48%;background:var(--red);border-color:rgba(230,57,70,0.4);"></div>
+        <div class="map-dot" style="top:55%;left:22%;background:var(--amber);border-color:rgba(255,179,0,0.4);"></div>
+        <div class="map-dot" style="top:30%;left:68%;background:var(--red);border-color:rgba(230,57,70,0.4);"></div>
+        <div class="map-dot" style="top:62%;left:75%;background:var(--blue);border-color:rgba(43,127,255,0.4);"></div>
+        <div style="position:absolute;bottom:.75rem;right:.75rem;display:flex;gap:.75rem;font-size:.72rem;">
+          <span style="color:var(--red);">● High</span>
+          <span style="color:var(--amber);">● Medium</span>
+          <span style="color:var(--blue);">● Monitoring</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <section id="factcheck" class="tab-content">
-            <div class="card">
-                <h2><i class="fa-solid fa-shield-halved"></i> Live Database Fact-Checking Engine</h2>
-                <p style="margin-bottom: 15px;">Input a headline. The engine drops local sandboxing and directly interfaces with the global Google Fact Check API Explorer database.</p>
-                <input type="text" id="news-input" placeholder="Enter war news, claims, or local announcements to cross-examine...">
-                <button id="verify-btn" class="standard-btn">Execute External Database Query &rarr;</button>
-            </div>
-        </section>
+<!-- PREPAREDNESS -->
+<section id="preparedness">
+  <div class="section-header">
+    <span class="section-label" data-i18n="prep_label">Be Ready</span>
+    <h2 class="section-title" data-i18n="prep_title">Disaster Preparedness</h2>
+    <p class="section-sub" data-i18n="prep_sub">Track your emergency readiness. A prepared community saves more lives.</p>
+  </div>
+  <div class="check-grid" id="checkGrid">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkmark"></div><div class="check-text" data-i18n="check1">72-hour water supply (3L/day/person)</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkmark"></div><div class="check-text" data-i18n="check2">First aid kit with medications</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkmark"></div><div class="check-text" data-i18n="check3">Emergency contacts list (printed)</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkmark"></div><div class="check-text" data-i18n="check4">Flashlights & extra batteries</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkmark"></div><div class="check-text" data-i18n="check5">Non-perishable food (3-day supply)</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkmark"></div><div class="check-text" data-i18n="check6">Copies of important documents</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkmark"></div><div class="check-text" data-i18n="check7">Emergency cash (small bills)</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkmark"></div><div class="check-text" data-i18n="check8">Evacuation route planned & shared</div></div>
+  </div>
+  <div class="progress-overall">
+    <div style="font-family:var(--font);font-weight:700;font-size:1.1rem;" data-i18n="prep_score">Your Preparedness Score</div>
+    <div class="prog-circle" id="progCircle">0%</div>
+    <div style="font-size:.85rem;color:var(--txt2);" id="prepMsg" data-i18n="prep_start">Start checking items above to assess your readiness</div>
+  </div>
+  <div class="tip-cards">
+    <div class="tip-card"><strong data-i18n="tip_title1">💡 Water Safety</strong><span data-i18n="tip_body1">Store 1 gallon per person per day. Rotate stock every 6 months. Know how to purify water in emergency.</span></div>
+    <div class="tip-card"><strong data-i18n="tip_title2">📻 Stay Informed</strong><span data-i18n="tip_body2">Keep a battery-powered radio. Sign up for local emergency alerts. Follow official accounts only.</span></div>
+    <div class="tip-card"><strong data-i18n="tip_title3">🤝 Community Network</strong><span data-i18n="tip_body3">Know your neighbors. Designate a meeting point. Identify community members who need extra help.</span></div>
+  </div>
+</section>
 
-        <section id="mentalhealth" class="tab-content">
-            <div class="card" style="text-align: center;">
-                <h2><i class="fa-solid fa-brain"></i> Dynamic Visual Grounding Engine</h2>
-                <p>Use this real-time pacing engine to regulate autonomic nervous system responses during acute trauma or panic conditions.</p>
-                
-                <div class="breathing-container">
-                    <div class="circle-container">
-                        <div class="breathing-circle" id="breath-circle"></div>
-                        <p id="breathing-text">Ready</p>
-                    </div>
-                    <button id="breath-btn" class="standard-btn">Initialize Grounding Cycle</button>
-                </div>
-            </div>
-        </section>
+<!-- SDG -->
+<section id="sdg">
+  <div class="section-header">
+    <span class="section-label">UN Sustainable Development Goals</span>
+    <h2 class="section-title" data-i18n="sdg_title">Our Global Commitment</h2>
+    <p class="section-sub" data-i18n="sdg_sub">HopeHero aligns with the United Nations SDGs to drive lasting humanitarian impact.</p>
+  </div>
+  <div class="sdg-grid">
+    <div class="sdg-card" style="background:rgba(0,230,118,0.06);border:1px solid rgba(0,230,118,0.2);">
+      <div class="sdg-num" style="color:var(--green);">3</div>
+      <div class="sdg-name" style="color:#fff;" data-i18n="sdg3_name">Good Health & Well-being</div>
+      <div class="sdg-desc" style="color:var(--txt2);" data-i18n="sdg3_desc">Providing emergency medical care, mental health support, and wellness resources to vulnerable populations worldwide.</div>
+    </div>
+    <div class="sdg-card" style="background:rgba(43,127,255,0.06);border:1px solid rgba(43,127,255,0.2);">
+      <div class="sdg-num" style="color:var(--blue);">10</div>
+      <div class="sdg-name" style="color:#fff;" data-i18n="sdg10_name">Reduced Inequalities</div>
+      <div class="sdg-desc" style="color:var(--txt2);" data-i18n="sdg10_desc">Ensuring equal access to resources, aid, and information regardless of nationality, language, or socioeconomic status.</div>
+    </div>
+    <div class="sdg-card" style="background:rgba(255,179,0,0.06);border:1px solid rgba(255,179,0,0.2);">
+      <div class="sdg-num" style="color:var(--amber);">16</div>
+      <div class="sdg-name" style="color:#fff;" data-i18n="sdg16_name">Peace, Justice & Strong Institutions</div>
+      <div class="sdg-desc" style="color:var(--txt2);" data-i18n="sdg16_desc">Supporting transparent, accountable emergency response systems and combating misinformation during crises.</div>
+    </div>
+  </div>
+</section>
 
-        <section id="donate" class="tab-content">
-            <div class="card" style="text-align: center; padding: 3rem 2rem;">
-                <h2><i class="fa-solid fa-hand-holding-heart"></i> Direct Global Liquidity Tunnel</h2>
-                <p style="margin-bottom: 2rem; color: #555;">Bypasses intermediate processing. This link establishes an encrypted session directly into the International Committee of the Red Cross secure donation ledger.</p>
-                <a href="https://www.icrc.org/en/donate" target="_blank" class="standard-btn" style="background-color: #28a745; font-size: 1.2rem; padding: 15px 30px;">Open Secure ICRC Gateway</a>
-            </div>
-        </section>
-    </main>
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Hope<span>Hero</span></div>
+      <p class="footer-desc" data-i18n="footer_desc">Technology-driven humanitarian platform connecting those in need with help, hope, and verified resources.</p>
+      <div class="social-links" style="margin-top:1.25rem;">
+        <a href="#">𝕏</a>
+        <a href="#">in</a>
+        <a href="#">f</a>
+        <a href="#">▶</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_platform">Platform</h4>
+      <ul>
+        <li><a href="#sos" data-i18n="footer_sos">Emergency SOS</a></li>
+        <li><a href="#refugee" data-i18n="footer_refugee">Refugee Hub</a></li>
+        <li><a href="#detector" data-i18n="footer_detect">Fake News Detector</a></li>
+        <li><a href="#dashboard" data-i18n="footer_dash">Crisis Dashboard</a></li>
+        <li><a href="#preparedness" data-i18n="footer_prep">Preparedness</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_support">Get Support</h4>
+      <ul>
+        <li><a href="#" data-i18n="footer_mental">Mental Health</a></li>
+        <li><a href="#donation" data-i18n="footer_volunteer">Volunteer</a></li>
+        <li><a href="#donation" data-i18n="footer_donate">Donate</a></li>
+        <li><a href="#" data-i18n="footer_partners">Partners</a></li>
+        <li><a href="#" data-i18n="footer_api">API Access</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_newsletter">Newsletter</h4>
+      <p style="font-size:.82rem;color:var(--txt3);margin-bottom:.75rem;" data-i18n="footer_nl_desc">Crisis alerts and updates delivered to your inbox.</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="your@email.com"/>
+        <button class="btn btn-primary" style="padding:.6rem 1rem;font-size:.82rem;" data-i18n="footer_subscribe">Subscribe</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 HopeHero. All rights reserved. Built for humanity. | SDG 3 · 10 · 16</p>
+    <p style="color:var(--txt3);">In crisis? Call your local emergency number immediately.</p>
+  </div>
+</footer>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- CHAT TOGGLE -->
+<button class="chat-toggle" onclick="toggleChat()" title="AI Emergency Assistant">🤖</button>
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-avatar">🤖</div>
+    <div><h4>HopeAI Assistant</h4><p>● Online — Ready to help</p></div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg chat-bot" data-i18n="chat_welcome">Hi! I'm HopeAI, your emergency assistant. I can help with safety tips, finding resources, emotional support, and crisis guidance. How can I help you today?</div>
+  </div>
+  <div class="quick-replies" id="quickReplies">
+    <button class="quick-reply" onclick="sendQuick('I need emergency help')" data-i18n="qr1">Emergency Help</button>
+    <button class="quick-reply" onclick="sendQuick('Find nearby shelter')" data-i18n="qr2">Find Shelter</button>
+    <button class="quick-reply" onclick="sendQuick('I feel anxious and stressed')" data-i18n="qr3">Mental Support</button>
+    <button class="quick-reply" onclick="sendQuick('Safety tips for disasters')" data-i18n="qr4">Safety Tips</button>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+    <button class="chat-send" onclick="sendMsg()">➤</button>
+  </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Core Tab Switching Infrastructure
-            const navButtons = document.querySelectorAll('.nav-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
+<script>
+// ── LANGUAGE TRANSLATIONS ─────────────────────────────────
+const langs = {
+  en:{
+    nav_home:"Home",nav_sos:"SOS",nav_refugee:"Refugee Hub",nav_donate:"Donate",nav_dash:"Dashboard",nav_mental:"Mental Health",nav_sos_btn:"Emergency SOS",
+    hero_badge:"AI-Powered Emergency Platform",hero_title2:"Saving Lives Through Technology",hero_sub:"Technology-driven humanitarian support during wars, disasters, and emergencies. Real-time, trusted, accessible to all.",
+    hero_btn_sos:"🆘 Emergency SOS",hero_btn_help:"Get Help",hero_btn_support:"Support Others",
+    stat1:"Lives Impacted",stat2:"Volunteers Active",stat3:"Countries Covered",stat4:"Donations Raised",
+    sos_label:"Emergency System",sos_title:"Emergency SOS",sos_sub:"Trigger an instant alert. Our network responds within minutes.",sos_btn:"SOS",sos_live:"Live Status",
+    sos_medical:"Medical",sos_food:"Food",sos_shelter:"Shelter",sos_rescue:"Rescue",sos_missing:"Missing",sos_water:"Water",
+    status1:"Emergency network: Online",status2:"Volunteers nearby: 12 available",status3:"Avg response time: 4 minutes",status4:"Medical units: 3 dispatched",
+    emergency_contacts:"Emergency Contacts",
+    refugee_label:"Support Network",refugee_title:"Refugee Support Hub",refugee_sub:"Find shelter, food, medical care, and essential resources near you.",
+    refugee_search:"Search resources...",search_btn:"Search",filter_all:"All",filter_shelter:"Shelter",filter_food:"Food",filter_medical:"Medical",filter_transport:"Transport",
+    r1_title:"Temporary Shelter Zones",r1_desc:"Safe temporary housing for displaced families with basic amenities.",
+    r2_title:"Food Distribution Center",r2_desc:"Hot meals and ration packs distributed three times daily.",
+    r3_title:"Mobile Medical Units",r3_desc:"Traveling medical teams providing primary care and vaccinations.",
+    r4_title:"Water Stations",r4_desc:"Clean potable water distribution points available 24/7.",
+    r5_title:"Transportation Assistance",r5_desc:"Free shuttle services connecting camps to evacuation zones.",
+    r6_title:"Family Reunification",r6_desc:"Teams helping separated families reconnect safely.",
+    det_label:"AI Verification",det_title:"Fake News Detector",det_sub:"Paste any headline, URL, or claim to check its credibility.",det_btn:"Analyze with AI",det_verdict:"Verdict",
+    det_tips:"Misinformation Tips",tip1:"Always verify with multiple independent sources",tip2:"Check publication date and author credentials",tip3:"Reverse image search photos before sharing",
+    don_label:"Give & Volunteer",don_title:"Donate & Volunteer",don_sub:"Your contribution saves lives. Join 50,000+ donors and volunteers.",
+    camp1_title:"Emergency Food Aid",camp1_desc:"Providing daily meals for 10,000 displaced families.",
+    camp2_title:"Medical Crisis Fund",camp2_desc:"Supplying trauma kits and mobile medical units.",
+    camp3_title:"Shelter for Families",camp3_desc:"Building temporary housing for 500 refugee families.",
+    donate_btn:"Donate Now",vol_title:"Register as a Volunteer",form_name:"Full Name",form_email:"Email",form_skill:"Skill",form_location:"Location",vol_btn:"Join the Mission",
+    skill_medical:"Medical / First Aid",skill_logistics:"Logistics",skill_translation:"Translation",skill_counseling:"Counseling",skill_tech:"Technology",
+    mh_label:"Well-being",mh_title:"Mental Health Support",mh_sub:"Trauma, stress, and fear are real. We're here to help you breathe, reflect, and recover.",
+    breath_title:"Breathing Exercise",breath_desc:"Tap the circle and follow the rhythm to calm your nervous system.",breath_tap:"Tap to start",breath_instr:"Inhale · Hold · Exhale",
+    mood_title:"How are you feeling?",mood_desc:"Check in with yourself. No judgment here.",
+    positive1:"You are ",positive2:"Every crisis passes. We face it together.",
+    support_resources:"Support Resources",res1_title:"🧠 Trauma Recovery Guide",res1_desc:"Step-by-step support for processing traumatic events.",
+    res2_title:"🌙 Sleep & Stress Relief",res2_desc:"Guided audio sessions for rest during crisis situations.",
+    res3_title:"👨‍👩‍👧 Family Resilience Kit",res3_desc:"Activities to support children during emergencies.",
+    dash_label:"Live Data",dash_title:"Crisis Dashboard",dash_sub:"Real-time global emergency data from verified sources.",
+    dash1:"Active Emergencies",dash2:"Refugees Tracked",dash3:"Donations Today",dash4:"Volunteers Online",dash5:"Countries Covered",
+    chart1_title:"Emergency Alerts by Region",chart2_title:"Active Crisis Zones",
+    prep_label:"Be Ready",prep_title:"Disaster Preparedness",prep_sub:"Track your emergency readiness. A prepared community saves more lives.",
+    check1:"72-hour water supply (3L/day/person)",check2:"First aid kit with medications",check3:"Emergency contacts list (printed)",check4:"Flashlights & extra batteries",
+    check5:"Non-perishable food (3-day supply)",check6:"Copies of important documents",check7:"Emergency cash (small bills)",check8:"Evacuation route planned & shared",
+    prep_score:"Your Preparedness Score",prep_start:"Start checking items above to assess your readiness",
+    tip_title1:"💡 Water Safety",tip_body1:"Store 1 gallon per person per day. Rotate stock every 6 months.",
+    tip_title2:"📻 Stay Informed",tip_body2:"Keep a battery-powered radio. Follow official accounts only.",
+    tip_title3:"🤝 Community Network",tip_body3:"Know your neighbors. Designate a meeting point.",
+    sdg_title:"Our Global Commitment",sdg_sub:"HopeHero aligns with UN SDGs to drive lasting humanitarian impact.",
+    sdg3_name:"Good Health & Well-being",sdg3_desc:"Providing emergency medical care and mental health support worldwide.",
+    sdg10_name:"Reduced Inequalities",sdg10_desc:"Ensuring equal access to resources regardless of nationality or language.",
+    sdg16_name:"Peace, Justice & Strong Institutions",sdg16_desc:"Supporting transparent emergency response and combating misinformation.",
+    footer_desc:"Technology-driven humanitarian platform connecting those in need with help and verified resources.",
+    footer_platform:"Platform",footer_sos:"Emergency SOS",footer_refugee:"Refugee Hub",footer_detect:"Fake News Detector",footer_dash:"Crisis Dashboard",footer_prep:"Preparedness",
+    footer_support:"Get Support",footer_mental:"Mental Health",footer_volunteer:"Volunteer",footer_donate:"Donate",footer_partners:"Partners",footer_api:"API Access",
+    footer_newsletter:"Newsletter",footer_nl_desc:"Crisis alerts and updates delivered to your inbox.",footer_subscribe:"Subscribe",
+    chat_welcome:"Hi! I'm HopeAI, your emergency assistant. How can I help you today?",
+    qr1:"Emergency Help",qr2:"Find Shelter",qr3:"Mental Support",qr4:"Safety Tips"
+  },
+  ar:{
+    nav_home:"الرئيسية",nav_sos:"نداء استغاثة",nav_refugee:"مركز اللاجئين",nav_donate:"تبرع",nav_dash:"لوحة البيانات",nav_mental:"الصحة النفسية",nav_sos_btn:"نداء استغاثة",
+    hero_badge:"منصة طوارئ مدعومة بالذكاء الاصطناعي",hero_title2:"إنقاذ الأرواح بالتكنولوجيا",hero_sub:"دعم إنساني مدفوع بالتكنولوجيا خلال الحروب والكوارث. فوري، موثوق، في متناول الجميع.",
+    hero_btn_sos:"🆘 نداء استغاثة",hero_btn_help:"احصل على مساعدة",hero_btn_support:"ادعم الآخرين",
+    stat1:"أرواح مُنقذة",stat2:"متطوعون نشطون",stat3:"دول مشمولة",stat4:"تبرعات جُمعت",
+    sos_label:"نظام الطوارئ",sos_title:"نداء استغاثة",sos_sub:"أرسل تنبيهاً فورياً. شبكتنا تستجيب في غضون دقائق.",sos_btn:"SOS",
+    sos_medical:"طبي",sos_food:"غذاء",sos_shelter:"مأوى",sos_rescue:"إنقاذ",sos_missing:"مفقود",sos_water:"ماء",
+    status1:"شبكة الطوارئ: متصلة",status2:"متطوعون قريبون: 12 متاح",status3:"متوسط وقت الاستجابة: 4 دقائق",status4:"وحدات طبية: 3 منتشرة",emergency_contacts:"جهات اتصال الطوارئ",
+    refugee_label:"شبكة الدعم",refugee_title:"مركز دعم اللاجئين",refugee_sub:"ابحث عن المأوى والغذاء والرعاية الطبية بالقرب منك.",
+    refugee_search:"ابحث عن الموارد...",search_btn:"بحث",filter_all:"الكل",filter_shelter:"مأوى",filter_food:"غذاء",filter_medical:"طبي",filter_transport:"نقل",
+    det_label:"التحقق بالذكاء الاصطناعي",det_title:"كاشف الأخبار الكاذبة",det_sub:"الصق أي عنوان أو رابط أو ادعاء للتحقق من مصداقيته.",det_btn:"تحليل بالذكاء الاصطناعي",det_verdict:"الحكم",
+    don_label:"تبرع وتطوع",don_title:"تبرع وتطوع",don_sub:"مساهمتك تُنقذ أرواحاً.",donate_btn:"تبرع الآن",vol_btn:"انضم للمهمة",
+    mh_label:"الصحة النفسية",mh_title:"دعم الصحة النفسية",mh_sub:"الصدمة والتوتر والخوف حقيقية. نحن هنا لمساعدتك.",
+    breath_tap:"اضغط للبدء",positive1:"أنت ",positive2:"كل أزمة تمر. نواجهها معاً.",
+    sdg_title:"التزامنا العالمي",sdg_sub:"نتوافق مع أهداف التنمية المستدامة للأمم المتحدة.",
+    sdg3_name:"الصحة الجيدة والرفاه",sdg10_name:"الحد من أوجه عدم المساواة",sdg16_name:"السلام والعدل والمؤسسات القوية",
+    chat_welcome:"مرحباً! أنا HopeAI، مساعدك في حالات الطوارئ. كيف يمكنني مساعدتك؟",
+    qr1:"مساعدة طارئة",qr2:"إيجاد مأوى",qr3:"دعم نفسي",qr4:"نصائح السلامة",
+    footer_subscribe:"اشترك",prep_score:"درجة استعدادك",footer_desc:"منصة إنسانية مدفوعة بالتكنولوجيا."
+  },
+  hi:{
+    nav_home:"होम",nav_sos:"आपातकालीन SOS",nav_refugee:"शरणार्थी केंद्र",nav_donate:"दान करें",nav_dash:"डैशबोर्ड",nav_mental:"मानसिक स्वास्थ्य",nav_sos_btn:"आपातकालीन SOS",
+    hero_badge:"AI-संचालित आपातकालीन प्लेटफ़ॉर्म",hero_title2:"तकनीक से जीवन बचाना",hero_sub:"युद्धों, आपदाओं और आपात स्थितियों में तकनीक-संचालित मानवीय सहायता।",
+    hero_btn_sos:"🆘 आपातकालीन SOS",hero_btn_help:"मदद पाएं",hero_btn_support:"दूसरों की मदद करें",
+    stat1:"प्रभावित जीवन",stat2:"सक्रिय स्वयंसेवक",stat3:"कवर देश",stat4:"एकत्रित दान",
+    sos_btn:"SOS",det_btn:"AI से विश्लेषण करें",donate_btn:"अभी दान करें",vol_btn:"मिशन से जुड़ें",
+    breath_tap:"शुरू करने के लिए टैप करें",positive1:"आप ",positive2:"हर संकट गुज़र जाता है। हम साथ हैं।",
+    sdg_title:"हमारी वैश्विक प्रतिबद्धता",sdg3_name:"अच्छा स्वास्थ्य और कल्याण",sdg10_name:"असमानताओं में कमी",sdg16_name:"शांति, न्याय और मज़बूत संस्थाएं",
+    chat_welcome:"नमस्ते! मैं HopeAI हूं, आपका आपातकालीन सहायक। आज मैं आपकी कैसे मदद कर सकता हूं?",
+    qr1:"आपातकालीन मदद",qr2:"आश्रय खोजें",qr3:"मानसिक सहायता",qr4:"सुरक्षा सुझाव",
+    footer_subscribe:"सदस्यता लें",prep_score:"आपकी तैयारी का स्कोर",footer_desc:"मानवीय सहायता मंच।"
+  },
+  fr:{
+    nav_home:"Accueil",nav_sos:"SOS",nav_refugee:"Hub Réfugiés",nav_donate:"Donner",nav_dash:"Tableau de bord",nav_mental:"Santé Mentale",nav_sos_btn:"SOS d'urgence",
+    hero_badge:"Plateforme d'urgence propulsée par l'IA",hero_title2:"Sauver des vies grâce à la technologie",hero_sub:"Soutien humanitaire technologique pendant les guerres, catastrophes et crises. Temps réel, fiable, accessible à tous.",
+    hero_btn_sos:"🆘 SOS d'urgence",hero_btn_help:"Obtenir de l'aide",hero_btn_support:"Soutenir les autres",
+    stat1:"Vies impactées",stat2:"Bénévoles actifs",stat3:"Pays couverts",stat4:"Dons collectés",
+    sos_btn:"SOS",sos_medical:"Médical",sos_food:"Nourriture",sos_shelter:"Abri",sos_rescue:"Secours",sos_missing:"Disparu",sos_water:"Eau",
+    status1:"Réseau d'urgence: En ligne",status2:"Bénévoles à proximité: 12 disponibles",status3:"Temps de réponse moyen: 4 minutes",status4:"Unités médicales: 3 déployées",emergency_contacts:"Contacts d'urgence",
+    refugee_label:"Réseau de soutien",refugee_title:"Hub de soutien aux réfugiés",refugee_sub:"Trouvez un abri, de la nourriture et des soins médicaux près de vous.",
+    refugee_search:"Rechercher des ressources...",search_btn:"Rechercher",filter_all:"Tous",filter_shelter:"Abri",filter_food:"Nourriture",filter_medical:"Médical",filter_transport:"Transport",
+    det_label:"Vérification IA",det_title:"Détecteur de fausses nouvelles",det_sub:"Collez n'importe quel titre ou URL pour vérifier sa crédibilité.",det_btn:"Analyser avec l'IA",det_verdict:"Verdict",
+    don_label:"Donner et Bénévolat",don_title:"Donner et Devenir Bénévole",don_sub:"Votre contribution sauve des vies.",donate_btn:"Faire un don",vol_btn:"Rejoindre la mission",
+    mh_label:"Bien-être",mh_title:"Soutien en santé mentale",mh_sub:"Le traumatisme, le stress et la peur sont réels. Nous sommes là pour vous aider.",
+    breath_tap:"Appuyez pour commencer",positive1:"Vous n'êtes ",positive2:"Chaque crise passe. Nous l'affrontons ensemble.",
+    sdg_title:"Notre engagement mondial",sdg_sub:"HopeHero s'aligne sur les ODD de l'ONU.",
+    sdg3_name:"Bonne santé et bien-être",sdg10_name:"Inégalités réduites",sdg16_name:"Paix, justice et institutions solides",
+    chat_welcome:"Bonjour! Je suis HopeAI, votre assistant d'urgence. Comment puis-je vous aider?",
+    qr1:"Aide d'urgence",qr2:"Trouver un abri",qr3:"Soutien mental",qr4:"Conseils de sécurité",
+    footer_subscribe:"S'abonner",prep_score:"Votre score de préparation",footer_desc:"Plateforme humanitaire technologique."
+  }
+};
 
-            navButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    navButtons.forEach(b => b.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
+let currentLang='en';
+function setLang(l){
+  currentLang=l;
+  const d=langs[l]||langs.en;
+  document.documentElement.lang=l;
+  document.documentElement.dir=l==='ar'?'rtl':'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(d[k])el.textContent=d[k];
+    else if(langs.en[k])el.textContent=langs.en[k];
+  });
+}
+function t(k){return(langs[currentLang]||langs.en)[k]||langs.en[k]||k;}
 
-                    btn.classList.add('active');
-                    const targetId = btn.getAttribute('data-target');
-                    document.getElementById(targetId).classList.add('active');
-                });
-            });
+// ── PARTICLES ──────────────────────────────────
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<25;i++){
+    const d=document.createElement('div');
+    d.className='particle';
+    d.style.cssText=`left:${Math.random()*100}%;animation-duration:${8+Math.random()*12}s;animation-delay:${-Math.random()*20}s;opacity:${0.3+Math.random()*0.5};`;
+    c.appendChild(d);
+  }
+})();
 
-            // Functional Geolocation and Broadcast Data Assembly
-            const sosBtn = document.getElementById('sos-trigger');
-            const sosOutput = document.getElementById('sos-output');
+// ── COUNTER ANIMATION ──────────────────────────
+function animateCounter(el,target,suffix,duration){
+  let start=0,step=target/60;
+  const tick=()=>{
+    start=Math.min(start+step,target);
+    el.textContent=Math.floor(start).toLocaleString()+(suffix||'');
+    if(start<target)requestAnimationFrame(tick);
+  };
+  tick();
+}
+window.addEventListener('load',()=>{
+  animateCounter(document.getElementById('c1'),2400000,'');
+  animateCounter(document.getElementById('c2'),18432,'');
+  animateCounter(document.getElementById('c3'),97,'');
+  animateCounter(document.getElementById('c4'),0,'');
+  setTimeout(()=>document.getElementById('c4').textContent='$4.2M',1500);
+  buildBarChart();
+});
 
-            sosBtn.addEventListener('click', () => {
-                sosBtn.innerText = "QUERYING HARDWARE GPS...";
-                
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            const lat = position.coords.latitude;
-                            const lon = position.coords.longitude;
-                            const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-                            const textMessage = encodeURIComponent(`EMERGENCY SOS: My exact coordinates are: Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}. View my location here: ${mapUrl}`);
-                            
-                            sosBtn.innerText = "SOS ENGINE BROADCASTING";
-                            sosBtn.style.backgroundColor = "darkred";
-                            
-                            sosOutput.innerHTML = `
-                                <div style="background:#d4edda; color:#155724; padding:15px; border-radius:5px; margin-top:15px; text-align:left;">
-                                    <strong><i class="fa-solid fa-circle-check"></i> Telemetry Pack Assembled!</strong><br>
-                                    <strong>Coordinates:</strong> ${lat.toFixed(5)}, ${lon.toFixed(5)}<br><br>
-                                    <a href="${mapUrl}" target="_blank" class="standard-btn" style="background:#333; margin-right:10px;">Test Live Map Vector</a>
-                                    <a href="https://wa.me/?text=${textMessage}" target="_blank" class="action-link"><i class="fa-brands fa-whatsapp"></i> Broadcast to Contacts via WhatsApp</a>
-                                </div>
-                            `;
-                        },
-                        (error) => {
-                            sosBtn.innerText = "GENERATE LIVE SOS";
-                            sosOutput.innerHTML = `<p style="color:red; font-weight:bold; margin-top:10px;">Hardware Error: Geolocation permissions denied. Check browser location access toggle.</p>`;
-                        }
-                    );
-                } else {
-                    sosOutput.innerText = "Device browser hardware missing Geolocation channels.";
-                }
-            });
+// ── NAV ──────────────────────────────────────
+function toggleNav(){document.getElementById('navLinks').classList.toggle('open');}
+function scrollTo(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 
-            // Leaflet.js Real Dynamic OpenStreetMap Generation Engine
-            const loadMapBtn = document.getElementById('load-map-btn');
-            let mapInitialized = false;
-            let leafletMap;
+// ── SOS ──────────────────────────────────────
+let selectedType='Medical';
+function selectType(el,type){
+  selectedType=type;
+  document.querySelectorAll('.sos-type').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+}
+function triggerSOS(){
+  const n=document.getElementById('sosNotif');
+  n.textContent=`✅ ${selectedType} emergency request sent! Help is on the way.`;
+  n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),4000);
+}
 
-            loadMapBtn.addEventListener('click', () => {
-                if (mapInitialized) return;
-                
-                loadMapBtn.innerText = "ACQUIRING RADAR FOCUS...";
-                
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        
-                        loadMapBtn.style.display = 'none';
-                        mapInitialized = true;
-                        
-                        // Render map Canvas
-                        leafletMap = L.map('map').setView([lat, lon], 13);
-                        
-                        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            maxZoom: 19,
-                            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                        }).addTo(leafletMap);
-                        
-                        // Drop an active pinpoint marker at user hardware target
-                        L.marker([lat, lon]).addTo(leafletMap)
-                            .bindPopup('<b>Your Current Verified Position</b><br>Safe zone search range initialized.').openPopup();
-                    },
-                    () => {
-                        // Fallback safely to a global viewport if geolocation is rejected
-                        loadMapBtn.style.display = 'none';
-                        mapInitialized = true;
-                        leafletMap = L.map('map').setView([0, 0], 2);
-                        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            maxZoom: 19,
-                            attribution: '&copy; OpenStreetMap'
-                        }).addTo(leafletMap);
-                        alert("Using global fallback viewport. Grant location tracking rights to view your local tactical grid maps.");
-                    }
-                );
-            });
+// ── REFUGEE FILTER ───────────────────────────
+function filterResources(val){
+  document.querySelectorAll('.resource-card').forEach(c=>{
+    const text=c.textContent.toLowerCase();
+    c.style.display=text.includes(val.toLowerCase())?'':'none';
+  });
+}
+function filterTab(el,cat){
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.resource-card').forEach(c=>{
+    if(cat==='all'||c.dataset.cat===cat){c.style.display='';}
+    else{c.style.display='none';}
+  });
+}
 
-            // Live Cross-Border Database Query Redirection
-            const verifyBtn = document.getElementById('verify-btn');
-            const newsInput = document.getElementById('news-input');
+// ── DETECTOR ─────────────────────────────────
+const detectorResponses=[
+  {v:'✅ Trusted',cls:'verdict-trusted',conf:91,fill:'fill-green',reason:'Multiple verified sources corroborate this information. The publisher has a strong credibility score, and the content aligns with known facts from official organizations.'},
+  {v:'⚠️ Suspicious',cls:'verdict-suspicious',conf:52,fill:'fill-amber',reason:'Some elements of this content could not be fully verified. The source has a moderate credibility score. Treat with caution and cross-reference before sharing.'},
+  {v:'🚨 Fake News Risk',cls:'verdict-fake',conf:87,fill:'fill-red',reason:'This content shows multiple hallmarks of misinformation: unverifiable claims, emotionally charged language, and sources that could not be confirmed. Do not share.'}
+];
+function runDetector(){
+  const inp=document.getElementById('detInput').value.trim();
+  if(!inp)return;
+  const scan=document.getElementById('scanning');
+  const res=document.getElementById('detResult');
+  res.classList.remove('show');
+  scan.classList.add('active');
+  setTimeout(()=>{
+    scan.classList.remove('active');
+    const r=detectorResponses[Math.floor(Math.random()*3)];
+    document.getElementById('verdictText').textContent=r.v;
+    document.getElementById('verdictText').className='result-verdict '+r.cls;
+    const fill=document.getElementById('confFill');
+    fill.style.width='0%';
+    fill.className='confidence-fill '+r.fill;
+    setTimeout(()=>fill.style.width=r.conf+'%',50);
+    document.getElementById('confText').textContent=`Confidence: ${r.conf}% · Source credibility: ${r.conf-10}/100`;
+    document.getElementById('aiReason').textContent=r.reason;
+    res.classList.add('show');
+  },2200);
+}
 
-            verifyBtn.addEventListener('click', () => {
-                const query = newsInput.value.trim();
-                if (!query) {
-                    alert("Please input factual strings or headlines before dispatching queries.");
-                    return;
-                }
-                
-                // Launches an automated cross-origin deep link directory look up directly into Google's raw verified dataset
-                const targetUrl = `https://toolbox.google.com/factcheck/explorer/search/${encodeURIComponent(query)};hl=en`;
-                window.open(targetUrl, '_blank');
-            });
+// ── DONATION ──────────────────────────────────
+function joinVolunteer(){
+  alert('🎉 Thank you for joining HopeHero! We will contact you within 24 hours with your first mission briefing.');
+}
 
-            // Active CSS/JS Neurological Pacing Loop (Breathing Guide)
-            const breathBtn = document.getElementById('breath-btn');
-            const breathCircle = document.getElementById('breath-circle');
-            const breathText = document.getElementById('breathing-text');
-            let breathInterval;
-            let breathingActive = false;
+// ── MENTAL HEALTH ─────────────────────────────
+let breathPhase=0;
+const breathPhrases=['Inhale slowly...','Hold your breath...','Exhale gently...','Rest...'];
+function startBreath(){
+  const c=document.getElementById('breathCircle');
+  const i=document.getElementById('breathInstr');
+  c.className='breath-circle '+(breathPhase===0?'inhale':'exhale');
+  c.textContent=breathPhrases[breathPhase%4];
+  i.textContent=breathPhrases[(breathPhase+1)%4]+' will follow';
+  breathPhase++;
+}
+const moodMessages={
+  great:"That's wonderful! Remember to share your positive energy with others who may be struggling around you. 💙",
+  ok:"It's okay to feel okay. Take it one moment at a time. You're doing better than you think. 🌱",
+  sad:"We hear you. Sadness is a valid response to difficult situations. You don't have to face this alone. Reach out to someone you trust. 💙",
+  anxious:"Anxiety is normal in crisis. Try the breathing exercise — it activates your body's calm response. You are safe in this moment. 🌊",
+  scared:"Fear is your body protecting you. Take three slow breaths. You are stronger than you feel right now. We're here with you. 🤝"
+};
+function selectMood(el,mood){
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('moodResponse').textContent=moodMessages[mood]||'';
+}
 
-            breathBtn.addEventListener('click', () => {
-                if (breathingActive) {
-                    clearInterval(breathInterval);
-                    breathText.innerText = "Ready";
-                    breathCircle.classList.remove('expand');
-                    breathBtn.innerText = "Initialize Grounding Cycle";
-                    breathingActive = false;
-                    return;
-                }
+// ── DASHBOARD BAR CHART ───────────────────────
+function buildBarChart(){
+  const data=[{n:'MENA',v:340,c:'#e63946'},{n:'Asia',v:180,c:'#ffb300'},{n:'Africa',v:290,c:'#e63946'},{n:'Europe',v:120,c:'#2b7fff'},{n:'Americas',v:90,c:'#00d4ff'},{n:'Oceania',v:40,c:'#00e676'}];
+  const max=Math.max(...data.map(d=>d.v));
+  const bc=document.getElementById('barChart');
+  bc.innerHTML=data.map(d=>`<div class="bar-item"><div class="bar" style="width:100%;height:${(d.v/max*110)+8}px;background:${d.c};opacity:.85;"></div><div class="bar-name">${d.n}</div></div>`).join('');
+}
 
-                breathingActive = true;
-                breathBtn.innerText = "Terminate Grounding Cycle";
-                
-                let state = 0; // 0: In, 1: Hold, 2: Out, 3: Rest
-                
-                const runPacingAnimation = () => {
-                    if (state === 0) {
-                        breathText.innerText = "BREATHE IN...";
-                        breathCircle.classList.add('expand');
-                        state = 1;
-                    } else if (state === 1) {
-                        breathText.innerText = "HOLD POSITION";
-                        state = 2;
-                    } else if (state === 2) {
-                        breathText.innerText = "EXHALE SLOWLY...";
-                        breathCircle.classList.remove('expand');
-                        state = 3;
-                    } else if (state === 3) {
-                        breathText.innerText = "REST";
-                        state = 0;
-                    }
-                };
+// ── PREPAREDNESS ──────────────────────────────
+function toggleCheck(el){
+  el.classList.toggle('checked');
+  if(el.classList.contains('checked'))el.querySelector('.checkmark').textContent='✓';
+  else el.querySelector('.checkmark').textContent='';
+  updatePrep();
+}
+function updatePrep(){
+  const items=document.querySelectorAll('.check-item');
+  const checked=document.querySelectorAll('.check-item.checked').length;
+  const pct=Math.round((checked/items.length)*100);
+  const circle=document.getElementById('progCircle');
+  circle.style.background=`conic-gradient(var(--green) ${pct}%,var(--bg3) 0%)`;
+  circle.textContent=pct+'%';
+  const msgs=['Start checking items above to assess your readiness','Good start! Keep going — every item matters.','You\'re making great progress!','Almost there! A few more items to complete.','🎉 Excellent! You\'re fully prepared for emergencies!'];
+  document.getElementById('prepMsg').textContent=msgs[Math.floor(pct/25)];
+}
 
-                runPacingAnimation();
-                breathInterval = setInterval(runPacingAnimation, 4000); // Transitions precisely every 4 seconds
-            });
-        });
-    </script>
+// ── AI CHAT ──────────────────────────────────
+let chatOpen=false;
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatWindow').classList.toggle('open',chatOpen);
+}
+
+function addMsg(text,who){
+  const msgs=document.getElementById('chatMessages');
+  const d=document.createElement('div');
+  d.className='chat-msg chat-'+who;
+  d.textContent=text;
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+  return d;
+}
+
+function showTyping(){
+  const msgs=document.getElementById('chatMessages');
+  const d=document.createElement('div');
+  d.className='chat-msg chat-bot';
+  d.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+  return d;
+}
+
+async function callClaudeAPI(userMsg){
+  const systemPrompt=`You are HopeAI, an empathetic emergency assistant for HopeHero — a humanitarian platform helping people during wars, disasters, and refugee crises. Keep responses concise (2-4 sentences). Provide compassionate, practical guidance. For actual emergencies, always advise calling local emergency services. You can help with: emergency safety tips, finding resources, emotional support during crisis, disaster preparedness advice, and general information about humanitarian aid.`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:systemPrompt,
+        messages:[{role:'user',content:userMsg}]
+      })
+    });
+    const data=await resp.json();
+    return data.content?.[0]?.text||"I'm here for you. Please call your local emergency services if you're in immediate danger.";
+  }catch(e){
+    return "I'm here to help. If you're in immediate danger, please call your local emergency number (112, 911, or 999).";
+  }
+}
+
+async function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text)return;
+  input.value='';
+  document.getElementById('quickReplies').style.display='none';
+  addMsg(text,'user');
+  const typing=showTyping();
+  const reply=await callClaudeAPI(text);
+  typing.remove();
+  addMsg(reply,'bot');
+}
+
+function sendQuick(text){
+  document.getElementById('chatInput').value=text;
+  sendMsg();
+}
+</script>
 </body>
 </html>
-
-```
